@@ -152,6 +152,9 @@ func (exporter *BaseHuaweiCloudExporter) collectMetricByNamespace(ctx context.Co
 					if isResouceExist(&md.Dimensions, &allResourcesInfo) {
 						labels = exporter.getExtensionLabels(labels, preResourceName, namespace, privateFlag)
 						values = exporter.getExtensionLabelValues(values, &allResourcesInfo, getOriginalID(&md.Dimensions))
+					} else {
+						logs.Logger.Warnf("%s will be filter.", md.Dimensions)
+						continue
 					}
 
 					if len(labels) != len(values) {

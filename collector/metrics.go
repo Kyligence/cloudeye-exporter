@@ -2,6 +2,7 @@ package collector
 
 import (
 	"errors"
+	"github.com/huaweicloud/cloudeye-exporter/requests"
 	"net/http"
 	"strconv"
 
@@ -40,6 +41,11 @@ type Config struct {
 	Token            string
 	Username         string
 	UserID           string
+	NamePrefix       string
+	ProjectID        string
+	TagKey           string
+	TagValue         string
+	TtlMinute        int64
 
 	HwClient *golangsdk.ProviderClient
 }
@@ -94,8 +100,16 @@ func buildClientByAKSK(c *Config) error {
 
 	for _, ao := range []*golangsdk.AKSKAuthOptions{&pao, &dao} {
 		ao.IdentityEndpoint = c.IdentityEndpoint
-		ao.AccessKey = c.AccessKey
-		ao.SecretKey = c.SecretKey
+		var ak_err error
+		var sk_err error
+		ao.AccessKey, ak_err = Decrypt("Ee9TlFUNJzNuzRev", 1000, c.AccessKey)
+		ao.SecretKey, sk_err = Decrypt("Ee9TlFUNJzNuzRev", 1000, c.SecretKey)
+		if ak_err != nil {
+			return ak_err
+		}
+		if sk_err != nil {
+			return sk_err
+		}
 	}
 	return genClients(c, pao, dao)
 }
@@ -147,6 +161,11 @@ func InitConfig(config *CloudConfig) (*Config, error) {
 		Region:           auth.Region,
 		Password:         auth.Password,
 		Insecure:         true,
+		NamePrefix:       config.Custom.NamePrefix,
+		ProjectID:        auth.ProjectID,
+		TagKey:           config.Custom.TagKey,
+		TagValue:         config.Custom.TagValue,
+		TtlMinute:        config.Custom.TtlMinute,
 	}
 
 	err := buildClient(&configOptions)
@@ -261,19 +280,29 @@ func getAllLoadBalancer(client *Config) (*[]loadbalancers.LoadBalancer, error) {
 		return nil, err
 	}
 
-	allPages, err := loadbalancers.List(c, loadbalancers.ListOpts{}).AllPages()
+	allPages, err := loadbalancers.List(c, loadbalancers.ListOpts{
+		ProjectID: c.ProjectID,
+	}).AllPages()
 	if err != nil {
 		logs.Logger.Errorf("List load balancer error: %s", err.Error())
 		return nil, err
 	}
 
+	var matchLoadbalancers []loadbalancers.LoadBalancer
 	allLoadbalancers, err := loadbalancers.ExtractLoadBalancers(allPages)
 	if err != nil {
 		logs.Logger.Errorf("Extract load balancer pages error: %s", err.Error())
 		return nil, err
 	}
-
-	return &allLoadbalancers, nil
+	for _, lb := range allLoadbalancers {
+		if !containsLB(matchLoadbalancers, lb) && startWith(lb.Name, client.NamePrefix) {
+			matchLoadbalancers = append(matchLoadbalancers, lb)
+		}
+		if !containsLB(matchLoadbalancers, lb) && containsString(lb.Tags, client.TagKey+"="+client.TagValue) {
+			matchLoadbalancers = append(matchLoadbalancers, lb)
+		}
+	}
+	return &matchLoadbalancers, nil
 }
 
 func getAllListener(client *Config) (*[]listeners.Listener, error) {
@@ -282,19 +311,29 @@ func getAllListener(client *Config) (*[]listeners.Listener, error) {
 		return nil, err
 	}
 
-	allPages, err := listeners.List(c, listeners.ListOpts{}).AllPages()
+	allPages, err := listeners.List(c, listeners.ListOpts{
+		ProjectID: c.ProjectID,
+	}).AllPages()
 	if err != nil {
 		logs.Logger.Errorf("List listener all pages error: %s", err.Error())
 		return nil, err
 	}
 
+	var matchListeners []listeners.Listener
 	allListeners, err := listeners.ExtractListeners(allPages)
 	if err != nil {
 		logs.Logger.Errorf("Extract listener pages error: %s", err.Error())
 		return nil, err
 	}
-
-	return &allListeners, nil
+	for _, ls := range allListeners {
+		if !containsListener(matchListeners, ls) && startWith(ls.Name, client.NamePrefix) {
+			matchListeners = append(matchListeners, ls)
+		}
+		if !containsListener(matchListeners, ls) && containsString(ls.Tags, client.TagKey+"="+client.TagValue) {
+			matchListeners = append(matchListeners, ls)
+		}
+	}
+	return &matchListeners, nil
 }
 
 func getAllNat(c *Config) (*[]natgateways.NatGateway, error) {
@@ -334,14 +373,21 @@ func getAllRds(c *Config) (*rds.ListRdsResponse, error) {
 		logs.Logger.Errorf("List rds error: %s", err.Error())
 		return nil, err
 	}
-
+	var rdsResponse rds.ListRdsResponse
+	var matchRDS []rds.RdsInstanceResponse
 	allRds, err := rds.ExtractRdsInstances(allPages)
 	if err != nil {
 		logs.Logger.Errorf("Extract rds pages error: %s", err.Error())
 		return nil, err
 	}
-
-	return &allRds, nil
+	for _, rds := range allRds.Instances {
+		if !containsRDS(matchRDS, rds) && startWith(rds.Name, c.NamePrefix) {
+			matchRDS = append(matchRDS, rds)
+		}
+	}
+	rdsResponse.Instances = matchRDS
+	rdsResponse.TotalCount = len(matchRDS)
+	return &rdsResponse, nil
 }
 
 func getAllDcs(c *Config) (*dcs.ListDcsResponse, error) {
@@ -492,16 +538,17 @@ func getAllVolume(c *Config) (*[]volumes.Volume, error) {
 }
 
 func getAllServer(c *Config) (*[]servers.Server, error) {
-	client, err := openstack.NewComputeV2(c.HwClient, golangsdk.EndpointOpts{
+	client, err := openstack.NewComputeV1(c.HwClient, golangsdk.EndpointOpts{
 		Region: c.Region,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	allPages, err := servers.List(client, servers.ListOpts{
-		Limit: 1000,
+	allPages, err := servers.List(client, requests.ListOpts{
+		Tags: c.TagKey + "=" + c.TagValue,
 	}).AllPages()
+
 	if err != nil {
 		logs.Logger.Errorf("List servers error: %s", err.Error())
 		return nil, err
@@ -512,7 +559,6 @@ func getAllServer(c *Config) (*[]servers.Server, error) {
 		logs.Logger.Errorf("Extract servers all pages error: %s", err.Error())
 		return nil, err
 	}
-
 	return &result, nil
 }
 

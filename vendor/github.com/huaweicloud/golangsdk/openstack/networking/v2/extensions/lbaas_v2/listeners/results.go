@@ -71,6 +71,8 @@ type Listener struct {
 	// The provisioning status of the listener.
 	// This value is ACTIVE, PENDING_* or ERROR.
 	ProvisioningStatus string `json:"provisioning_status"`
+
+	Tags  []string `json:"tags"`
 }
 
 // ListenerPage is the page returned by a pager when traversing over a

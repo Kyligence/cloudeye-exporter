@@ -34,8 +34,6 @@ var defaultExtensionLabels = map[string][]string{
 	"sys_functiongraph":       []string{"func_urn"},
 }
 
-const TTL = time.Hour * 3
-
 var (
 	elbInfo serversInfo
 	natInfo serversInfo
@@ -117,7 +115,7 @@ func (exporter *BaseHuaweiCloudExporter) getElbResourceInfo() (map[string][]stri
 
 		elbInfo.Info = resourceInfos
 		elbInfo.FilterMetrics = filterMetrics
-		elbInfo.TTL = time.Now().Add(TTL).Unix()
+		elbInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		elbInfo.LenMetric = exporter.MetricLen
 	}
 	return elbInfo.Info, &elbInfo.FilterMetrics
@@ -196,7 +194,7 @@ func (exporter *BaseHuaweiCloudExporter) getNatResourceInfo() (map[string][]stri
 
 		natInfo.Info = resourceInfos
 		natInfo.FilterMetrics = filterMetrics
-		natInfo.TTL = time.Now().Add(TTL).Unix()
+		natInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		natInfo.LenMetric = exporter.MetricLen
 	}
 	return natInfo.Info, &natInfo.FilterMetrics
@@ -241,7 +239,7 @@ func (exporter *BaseHuaweiCloudExporter) getRdsResourceInfo() (map[string][]stri
 
 		rdsInfo.Info = resourceInfos
 		rdsInfo.FilterMetrics = filterMetrics
-		rdsInfo.TTL = time.Now().Add(TTL).Unix()
+		rdsInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		rdsInfo.LenMetric = exporter.MetricLen
 	}
 	return rdsInfo.Info, &rdsInfo.FilterMetrics
@@ -277,7 +275,7 @@ func (exporter *BaseHuaweiCloudExporter) getDmsResourceInfo() (map[string][]stri
 		}
 
 		dmsInfo.Info = resourceInfos
-		dmsInfo.TTL = time.Now().Add(TTL).Unix()
+		dmsInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		dmsInfo.LenMetric = exporter.MetricLen
 	}
 	return dmsInfo.Info, &dmsInfo.FilterMetrics
@@ -317,7 +315,7 @@ func (exporter *BaseHuaweiCloudExporter) getDcsResourceInfo() (map[string][]stri
 
 		dcsInfo.Info = resourceInfos
 		dcsInfo.FilterMetrics = filterMetrics
-		dcsInfo.TTL = time.Now().Add(TTL).Unix()
+		dcsInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		dcsInfo.LenMetric = exporter.MetricLen
 	}
 	return dcsInfo.Info, &dcsInfo.FilterMetrics
@@ -350,7 +348,7 @@ func (exporter *BaseHuaweiCloudExporter) getVpcResourceInfo() (map[string][]stri
 		}
 
 		vpcInfo.Info = resourceInfos
-		vpcInfo.TTL = time.Now().Add(TTL).Unix()
+		vpcInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		vpcInfo.LenMetric = exporter.MetricLen
 	}
 	return vpcInfo.Info, &vpcInfo.FilterMetrics
@@ -378,7 +376,7 @@ func (exporter *BaseHuaweiCloudExporter) getEvsResourceInfo() (map[string][]stri
 		}
 
 		evsInfo.Info = resourceInfos
-		evsInfo.TTL = time.Now().Add(TTL).Unix()
+		evsInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		evsInfo.LenMetric = exporter.MetricLen
 	}
 	return evsInfo.Info, &evsInfo.FilterMetrics
@@ -403,7 +401,7 @@ func (exporter *BaseHuaweiCloudExporter) getEcsResourceInfo() (map[string][]stri
 		}
 
 		ecsInfo.Info = resourceInfos
-		ecsInfo.TTL = time.Now().Add(TTL).Unix()
+		ecsInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		ecsInfo.LenMetric = exporter.MetricLen
 	}
 	return ecsInfo.Info, &ecsInfo.FilterMetrics
@@ -428,7 +426,7 @@ func (exporter *BaseHuaweiCloudExporter) getAsResourceInfo() (map[string][]strin
 		}
 
 		asInfo.Info = resourceInfos
-		asInfo.TTL = time.Now().Add(TTL).Unix()
+		asInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		asInfo.LenMetric = exporter.MetricLen
 	}
 	return asInfo.Info, &asInfo.FilterMetrics
@@ -453,7 +451,7 @@ func (exporter *BaseHuaweiCloudExporter) getFunctionGraphResourceInfo() (map[str
 		}
 
 		fgsInfo.Info = resourceInfos
-		fgsInfo.TTL = time.Now().Add(TTL).Unix()
+		fgsInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()
 		fgsInfo.LenMetric = exporter.MetricLen
 	}
 	return fgsInfo.Info, &fgsInfo.FilterMetrics

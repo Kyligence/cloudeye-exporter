@@ -1,9 +1,21 @@
-global:
-  prefix: "huaweicloud"
-
 auth:
-  auth_url: "https://iam.xxx.yyy.com/v3"
-  project_name: "{project_name}"
-  access_key: "{access_key}"
-  secret_key: "{secret_key}"
-  region: "{region}"
+  project_name: xxx
+  project_id: xxx
+  domain_name: ""
+  access_key: xxx
+  region: xxx
+  secret_key: xxx
+  auth_url: https://iam.xxx.myhuaweicloud.com/v3
+  user_name: ""
+  password: ""
+  is_encrypt: false
+global:
+  port: :8087
+  prefix: huaweicloud
+  metric_path: /metrics
+  max_routines: 0
+custom:
+  name_prefix: xxx
+  tag_key: xxx
+  tag_value: xxx
+  ttl_minute: 1

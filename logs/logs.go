@@ -7,7 +7,7 @@ var Logger log.Logger
 func InitLog(debug bool) {
 	Logger = log.Base()
 	err := Logger.SetFormat("logger:stdout?json=true")
-	if err != nil{
+	if err != nil {
 		Logger.Fatalf("Set Log format error: %s", err.Error())
 	}
 	err = Logger.SetLevel("info")
