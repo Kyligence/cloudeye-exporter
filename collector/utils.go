@@ -1,12 +1,12 @@
 package collector
 
 import (
-	"github.com/huaweicloud/golangsdk/openstack/compute/v2/servers"
-	rds "github.com/huaweicloud/golangsdk/openstack/rds/v3/instances"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"reflect"
 	"strings"
+
+	rds "github.com/huaweicloud/golangsdk/openstack/rds/v3/instances"
+	"gopkg.in/yaml.v2"
 
 	"github.com/huaweicloud/golangsdk/openstack/networking/v2/extensions/lbaas_v2/listeners"
 	"github.com/huaweicloud/golangsdk/openstack/networking/v2/extensions/lbaas_v2/loadbalancers"
@@ -14,14 +14,14 @@ import (
 
 type CloudAuth struct {
 	ProjectName string `yaml:"project_name"`
-	ProjectID   string `yaml:"project_id"`
-	DomainName  string `yaml:"domain_name"`
-	AccessKey   string `yaml:"access_key"`
+	ProjectID   string `yaml:"project_id,omitempty"`
+	DomainName  string `yaml:"domain_name,omitempty"`
+	AccessKey   string `yaml:"access_key,omitempty"`
 	Region      string `yaml:"region"`
-	SecretKey   string `yaml:"secret_key"`
+	SecretKey   string `yaml:"secret_key,omitempty"`
 	AuthURL     string `yaml:"auth_url"`
-	UserName    string `yaml:"user_name"`
-	Password    string `yaml:"password"`
+	UserName    string `yaml:"user_name,omitempty"`
+	Password    string `yaml:"password,omitempty"`
 	IsEncrypt   bool   `yaml:"is_encrypt"`
 }
 
@@ -36,7 +36,7 @@ type Custom struct {
 	NamePrefix string `yaml:"name_prefix"`
 	TagKey     string `yaml:"tag_key"`
 	TagValue   string `yaml:"tag_value"`
-	TtlMinute  int64    `yaml:"ttl_minute"`
+	TtlMinute  int64  `yaml:"ttl_minute"`
 }
 
 type CloudConfig struct {
@@ -71,7 +71,10 @@ func NewCloudConfigFromFile(file string) (*CloudConfig, error) {
 		if yaml_err != nil {
 			return nil, yaml_err
 		}
-		ioutil.WriteFile(file, data, 0644)
+		err := ioutil.WriteFile(file, data, 0644)
+		if err != nil {
+			return nil, err
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -128,22 +131,10 @@ func getMetricConfigMap(namespace string) map[string][]string {
 }
 
 func startWith(s string, e string) bool {
-	if strings.HasPrefix(s, e) {
-		return true
-	}
-	return false
+	return strings.HasPrefix(s, e)
 }
 
 func containsRDS(s []rds.RdsInstanceResponse, e rds.RdsInstanceResponse) bool {
-	for _, a := range s {
-		if reflect.DeepEqual(a, e) {
-			return true
-		}
-	}
-	return false
-}
-
-func containsServer(s []servers.Server, e servers.Server) bool {
 	for _, a := range s {
 		if reflect.DeepEqual(a, e) {
 			return true

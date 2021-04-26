@@ -2,9 +2,10 @@ package collector
 
 import (
 	"errors"
-	"github.com/huaweicloud/cloudeye-exporter/requests"
 	"net/http"
 	"strconv"
+
+	"github.com/huaweicloud/cloudeye-exporter/requests"
 
 	"github.com/huaweicloud/cloudeye-exporter/logs"
 	"github.com/huaweicloud/golangsdk"
