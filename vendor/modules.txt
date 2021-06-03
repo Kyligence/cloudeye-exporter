@@ -13,15 +13,15 @@ github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/huaweicloud/golangsdk v0.0.0-20200703083934-0708c52f1c75
+# github.com/huaweicloud/golangsdk v0.0.0-20210602072215-3a6ae0cf18e8
 ## explicit
 github.com/huaweicloud/golangsdk
-github.com/huaweicloud/golangsdk/internal
 github.com/huaweicloud/golangsdk/openstack
 github.com/huaweicloud/golangsdk/openstack/autoscaling/v1/groups
 github.com/huaweicloud/golangsdk/openstack/blockstorage/v2/volumes
 github.com/huaweicloud/golangsdk/openstack/ces/v1/metricdata
 github.com/huaweicloud/golangsdk/openstack/ces/v1/metrics
+github.com/huaweicloud/golangsdk/openstack/common/tags
 github.com/huaweicloud/golangsdk/openstack/compute/v2/flavors
 github.com/huaweicloud/golangsdk/openstack/compute/v2/images
 github.com/huaweicloud/golangsdk/openstack/compute/v2/servers
@@ -31,10 +31,9 @@ github.com/huaweicloud/golangsdk/openstack/dms/v1/queues
 github.com/huaweicloud/golangsdk/openstack/fgs/v2/function
 github.com/huaweicloud/golangsdk/openstack/identity/v2/tenants
 github.com/huaweicloud/golangsdk/openstack/identity/v2/tokens
+github.com/huaweicloud/golangsdk/openstack/identity/v3/catalog
 github.com/huaweicloud/golangsdk/openstack/identity/v3/domains
-github.com/huaweicloud/golangsdk/openstack/identity/v3/endpoints
 github.com/huaweicloud/golangsdk/openstack/identity/v3/projects
-github.com/huaweicloud/golangsdk/openstack/identity/v3/services
 github.com/huaweicloud/golangsdk/openstack/identity/v3/tokens
 github.com/huaweicloud/golangsdk/openstack/networking/v2/extensions/lbaas_v2/l7policies
 github.com/huaweicloud/golangsdk/openstack/networking/v2/extensions/lbaas_v2/listeners
@@ -70,7 +69,8 @@ github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
 # github.com/sirupsen/logrus v1.4.2
 github.com/sirupsen/logrus
-# golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1
+# golang.org/x/sys v0.0.0-20201119102817-f84b799fce68
+## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows

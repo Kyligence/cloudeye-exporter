@@ -2,6 +2,7 @@ package instances
 
 import (
 	"github.com/huaweicloud/golangsdk"
+	"github.com/huaweicloud/golangsdk/openstack/common/tags"
 	"github.com/huaweicloud/golangsdk/pagination"
 )
 
@@ -13,15 +14,27 @@ type CreateResult struct {
 	commonResult
 }
 
-type RestartRdsInstanceResult struct {
+type DeleteResult struct {
 	commonResult
 }
 
-type SingleToHaRdsInstanceResult struct {
+type RestartResult struct {
+	commonResult
+}
+
+type RenameResult struct {
+	commonResult
+}
+
+type SingleToHaResult struct {
 	commonResult
 }
 
 type ResizeFlavorResult struct {
+	commonResult
+}
+
+type EnlargeVolumeResult struct {
 	commonResult
 }
 
@@ -43,41 +56,41 @@ type Instance struct {
 	VpcId               string         `json:"vpc_id"`
 	SubnetId            string         `json:"subnet_id"`
 	SecurityGroupId     string         `json:"security_group_id"`
-	ChargeInfo          ChargeInfo     `json:"charge_info"`
+	ChargeInfo          ChargeResponse `json:"charge_info"`
 }
 
-type CreateRds struct {
+type ChargeResponse struct {
+	ChargeMode string `json:"charge_mode"`
+}
+
+type CreateResponse struct {
 	Instance Instance `json:"instance"`
 	JobId    string   `json:"job_id"`
 	OrderId  string   `json:"order_id"`
 }
 
-func (r CreateResult) Extract() (*CreateRds, error) {
-	var response CreateRds
+func (r CreateResult) Extract() (*CreateResponse, error) {
+	var response CreateResponse
 	err := r.ExtractInto(&response)
 	return &response, err
 }
 
-type DeleteInstanceRdsResult struct {
-	commonResult
-}
-
-type DeleteInstanceRdsResponse struct {
+type DeleteResponse struct {
 	JobId string `json:"job_id"`
 }
 
-func (r DeleteInstanceRdsResult) Extract() (*DeleteInstanceRdsResponse, error) {
-	var response DeleteInstanceRdsResponse
+func (r DeleteResult) Extract() (*DeleteResponse, error) {
+	var response DeleteResponse
 	err := r.ExtractInto(&response)
 	return &response, err
 }
 
-type RestartRdsResponse struct {
+type RestartResponse struct {
 	JobId string `json:"job_id"`
 }
 
-func (r RestartRdsInstanceResult) Extract() (*RestartRdsResponse, error) {
-	var response RestartRdsResponse
+func (r RestartResult) Extract() (*RestartResponse, error) {
+	var response RestartResponse
 	err := r.ExtractInto(&response)
 	return &response, err
 }
@@ -86,7 +99,7 @@ type SingleToHaResponse struct {
 	JobId string `json:"job_id"`
 }
 
-func (r SingleToHaRdsInstanceResult) Extract() (*SingleToHaResponse, error) {
+func (r SingleToHaResult) Extract() (*SingleToHaResponse, error) {
 	var response SingleToHaResponse
 	err := r.ExtractInto(&response)
 	return &response, err
@@ -100,10 +113,6 @@ func (r ResizeFlavorResult) Extract() (*ResizeFlavor, error) {
 	var response ResizeFlavor
 	err := r.ExtractInto(&response)
 	return &response, err
-}
-
-type EnlargeVolumeResult struct {
-	commonResult
 }
 
 type EnlargeVolumeResp struct {
@@ -126,32 +135,34 @@ type ListRdsResponse struct {
 }
 
 type RdsInstanceResponse struct {
-	Id                  string            `json:"id"`
-	Name                string            `json:"name"`
-	Status              string            `json:"status"`
-	PrivateIps          []string          `json:"private_ips"`
-	PublicIps           []string          `json:"public_ips"`
-	Port                int               `json:"port"`
-	Type                string            `json:"type"`
-	Ha                  Ha                `json:"ha"`
-	Region              string            `json:"region"`
-	DataStore           Datastore         `json:"datastore"`
-	Created             string            `json:"created"`
-	Updated             string            `json:"updated"`
-	DbUserName          string            `json:"db_user_name"`
-	VpcId               string            `json:"vpc_id"`
-	SubnetId            string            `json:"subnet_id"`
-	SecurityGroupId     string            `json:"security_group_id"`
-	FlavorRef           string            `json:"flavor_ref"`
-	Volume              Volume            `json:"volume"`
-	SwitchStrategy      string            `json:"switch_strategy"`
-	BackupStrategy      BackupStrategy    `json:"backup_strategy"`
-	MaintenanceWindow   string            `json:"maintenance_window"`
-	Nodes               []Nodes           `json:"nodes"`
-	RelatedInstance     []RelatedInstance `json:"related_instance"`
-	DiskEncryptionId    string            `json:"disk_encryption_id"`
-	EnterpriseProjectId string            `json:"enterprise_project_id"`
-	TimeZone            string            `json:"time_zone"`
+	Id                  string             `json:"id"`
+	Name                string             `json:"name"`
+	Status              string             `json:"status"`
+	PrivateIps          []string           `json:"private_ips"`
+	PublicIps           []string           `json:"public_ips"`
+	Port                int                `json:"port"`
+	Type                string             `json:"type"`
+	Ha                  Ha                 `json:"ha"`
+	Region              string             `json:"region"`
+	DataStore           Datastore          `json:"datastore"`
+	Created             string             `json:"created"`
+	Updated             string             `json:"updated"`
+	DbUserName          string             `json:"db_user_name"`
+	VpcId               string             `json:"vpc_id"`
+	SubnetId            string             `json:"subnet_id"`
+	SecurityGroupId     string             `json:"security_group_id"`
+	FlavorRef           string             `json:"flavor_ref"`
+	Volume              Volume             `json:"volume"`
+	SwitchStrategy      string             `json:"switch_strategy"`
+	BackupStrategy      BackupStrategy     `json:"backup_strategy"`
+	ChargeInfo          ChargeResponse     `json:"charge_info"`
+	MaintenanceWindow   string             `json:"maintenance_window"`
+	Nodes               []Nodes            `json:"nodes"`
+	RelatedInstance     []RelatedInstance  `json:"related_instance"`
+	DiskEncryptionId    string             `json:"disk_encryption_id"`
+	EnterpriseProjectId string             `json:"enterprise_project_id"`
+	TimeZone            string             `json:"time_zone"`
+	Tags                []tags.ResourceTag `json:"tags"`
 }
 
 type Nodes struct {
@@ -179,7 +190,7 @@ func (r RdsPage) IsEmpty() (bool, error) {
 	return len(data.Instances) == 0, err
 }
 
-// ExtractCloudServers is a function that takes a ListResult and returns the services' information.
+// ExtractRdsInstances is a function that takes a ListResult and returns the instances' information.
 func ExtractRdsInstances(r pagination.Page) (ListRdsResponse, error) {
 	var s ListRdsResponse
 	err := (r.(RdsPage)).ExtractInto(&s)
@@ -254,5 +265,29 @@ func (r SlowLogPage) IsEmpty() (bool, error) {
 func ExtractSlowLog(r pagination.Page) (SlowLogResp, error) {
 	var s SlowLogResp
 	err := (r.(SlowLogPage)).ExtractInto(&s)
+	return s, err
+}
+
+type RDSJobResult struct {
+	commonResult
+}
+
+type ListJob struct {
+	Job Job `json:"job"`
+}
+
+type Job struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Status     string `json:"status"`
+	Created    string `json:"created"`
+	Ended      string `json:"ended"`
+	Process    string `json:"process"`
+	FailReason string `json:"fail_reason"`
+}
+
+func (r RDSJobResult) Extract() (ListJob, error) {
+	var s ListJob
+	err := r.ExtractInto(&s)
 	return s, err
 }

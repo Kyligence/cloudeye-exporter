@@ -26,9 +26,11 @@ type CreateOpts struct {
 	VpcID                     string              `json:"vpc_id" required:"ture"`
 	HealthPeriodicAuditMethod string              `json:"health_periodic_audit_method,omitempty"`
 	HealthPeriodicAuditTime   int                 `json:"health_periodic_audit_time,omitempty"`
+	HealthPeriodicAuditGrace  int                 `json:"health_periodic_audit_grace_period,omitempty"`
 	InstanceTerminatePolicy   string              `json:"instance_terminate_policy,omitempty"`
 	Notifications             []string            `json:"notifications,omitempty"`
 	IsDeletePublicip          bool                `json:"delete_publicip,omitempty"`
+	EnterpriseProjectID       string              `json:"enterprise_project_id,omitempty"`
 }
 
 type NetworkOpts struct {
@@ -124,10 +126,12 @@ type UpdateOpts struct {
 	SecurityGroup             []SecurityGroupOpts `json:"security_groups,omitempty"`
 	HealthPeriodicAuditMethod string              `json:"health_periodic_audit_method,omitempty"`
 	HealthPeriodicAuditTime   int                 `json:"health_periodic_audit_time,omitempty"`
+	HealthPeriodicAuditGrace  int                 `json:"health_periodic_audit_grace_period,omitempty"`
 	InstanceTerminatePolicy   string              `json:"instance_terminate_policy,omitempty"`
 	Notifications             []string            `json:"notifications,omitempty"`
 	IsDeletePublicip          bool                `json:"delete_publicip,omitempty"`
 	ConfigurationID           string              `json:"scaling_configuration_id,omitempty"`
+	EnterpriseProjectID       string              `json:"enterprise_project_id,omitempty"`
 }
 
 func (opts UpdateOpts) ToGroupUpdateMap() (map[string]interface{}, error) {

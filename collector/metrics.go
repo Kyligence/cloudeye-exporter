@@ -179,7 +179,7 @@ func InitConfig(config *CloudConfig) (*Config, error) {
 }
 
 func getCESClient(c *Config) (*golangsdk.ServiceClient, error) {
-	client, clientErr := openstack.NewCESV1(c.HwClient, golangsdk.EndpointOpts{
+	client, clientErr := openstack.NewCESClient(c.HwClient, golangsdk.EndpointOpts{
 		Region: c.Region,
 	})
 	if clientErr != nil {
@@ -282,6 +282,7 @@ func getAllLoadBalancer(client *Config) (*[]loadbalancers.LoadBalancer, error) {
 	}
 
 	allPages, err := loadbalancers.List(c, loadbalancers.ListOpts{
+		Limit:     1000,
 		ProjectID: c.ProjectID,
 	}).AllPages()
 	if err != nil {
@@ -313,6 +314,7 @@ func getAllListener(client *Config) (*[]listeners.Listener, error) {
 	}
 
 	allPages, err := listeners.List(c, listeners.ListOpts{
+		Limit:     1000,
 		ProjectID: c.ProjectID,
 	}).AllPages()
 	if err != nil {
@@ -326,6 +328,7 @@ func getAllListener(client *Config) (*[]listeners.Listener, error) {
 		logs.Logger.Errorf("Extract listener pages error: %s", err.Error())
 		return nil, err
 	}
+
 	for _, ls := range allListeners {
 		if !containsListener(matchListeners, ls) && startWith(ls.Name, client.NamePrefix) {
 			matchListeners = append(matchListeners, ls)
@@ -369,7 +372,7 @@ func getAllRds(c *Config) (*rds.ListRdsResponse, error) {
 		return nil, err
 	}
 
-	allPages, err := rds.List(client, rds.ListRdsInstanceOpts{}).AllPages()
+	allPages, err := rds.List(client, rds.ListOpts{}).AllPages()
 	if err != nil {
 		logs.Logger.Errorf("List rds error: %s", err.Error())
 		return nil, err
@@ -564,7 +567,7 @@ func getAllServer(c *Config) (*[]servers.Server, error) {
 }
 
 func getAllGroup(c *Config) (*[]groups.Group, error) {
-	client, err := openstack.NewAutoScalingV1(c.HwClient, golangsdk.EndpointOpts{
+	client, err := openstack.NewAutoScalingService(c.HwClient, golangsdk.EndpointOpts{
 		Region: c.Region,
 	})
 	if err != nil {

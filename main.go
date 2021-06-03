@@ -14,7 +14,7 @@ import (
 
 var (
 	clientConfig = flag.String("config", "./clouds.yml", "Path to the cloud configuration file")
-	filterEnable = flag.Bool("filter-enable", false, "Enabling monitoring metric filter")
+	filterEnable = flag.Bool("filter-enable", true, "Enabling monitoring metric filter")
 	debug        = flag.Bool("debug", false, "If debug the code.")
 )
 

@@ -11,7 +11,7 @@ func listURL(client *golangsdk.ServiceClient) string {
 }
 
 func listDetailURL(client *golangsdk.ServiceClient) string {
-	return client.ServiceURL("cloudservers", "detail")
+	return client.ServiceURL("servers", "detail")
 }
 
 func deleteURL(client *golangsdk.ServiceClient, id string) string {

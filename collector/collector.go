@@ -95,6 +95,10 @@ func (exporter *BaseHuaweiCloudExporter) collectMetricByNamespace(ctx context.Co
 	}()
 	logs.Logger.Debugf("[%s] Start getAllResource, namespace:%s", exporter.txnKey, namespace)
 	allResourcesInfo, filterMetrics := exporter.getAllResource(namespace)
+	if len(allResourcesInfo) == 0 {
+		logs.Logger.Warnln("Resources is null,skip get metrics")
+		return
+	}
 	logs.Logger.Debugf("[%s] End getAllResource, Total number of of resource:%d", exporter.txnKey, len(allResourcesInfo))
 	allMetrics := filterMetrics
 	var err error
