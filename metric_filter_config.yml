@@ -26,7 +26,7 @@ SYS.ELB:
     - m22_in_bandwidth
     - m23_out_bandwidth
 SYS.RDS:
-  rds_cluster_id:
+  rds_instance_id:
     - rds001_cpu_util
     - rds002_mem_util
     - rds003_iops

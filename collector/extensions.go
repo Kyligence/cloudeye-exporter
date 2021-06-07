@@ -216,24 +216,27 @@ func (exporter *BaseHuaweiCloudExporter) getRdsResourceInfo() (map[string][]stri
 		}
 		configMap := getMetricConfigMap("SYS.RDS")
 		for _, rds := range allrds.Instances {
-			resourceInfos[rds.Id] = []string{rds.Name}
+			//resourceInfos[rds.Id] = []string{rds.Name}
 			for _, node := range rds.Nodes {
-				resourceInfos[node.Id] = []string{fmt.Sprintf("%d", rds.Port), node.Name, node.Role}
+				resourceInfos[node.Id] = []string{fmt.Sprintf("%d", rds.Port), node.Name, node.Role, rds.DataStore.Type}
 			}
+		}
+
+		for k, v := range resourceInfos {
 			if configMap == nil {
 				continue
 			}
 			var dimName string
-			switch rds.DataStore.Type {
+			switch v[3] {
 			case "MySQL":
-				dimName = "rds_cluster_id"
+				dimName = "rds_instance_id"
 			case "PostgreSQL":
 				dimName = "postgresql_cluster_id"
 			case "SQLServer":
 				dimName = "rds_cluster_sqlserver_id"
 			}
 			if metricNames, ok := configMap[dimName]; ok {
-				filterMetrics = append(filterMetrics, buildSingleDimensionMetrics(metricNames, "SYS.RDS", dimName, rds.Id)...)
+				filterMetrics = append(filterMetrics, buildSingleDimensionMetrics(metricNames, "SYS.RDS", dimName, k)...)
 			}
 		}
 
