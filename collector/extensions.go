@@ -231,7 +231,7 @@ func (exporter *BaseHuaweiCloudExporter) getRdsResourceInfo() (map[string][]stri
 			case "MySQL":
 				dimName = "rds_instance_id"
 			case "PostgreSQL":
-				dimName = "postgresql_cluster_id"
+				dimName = "postgresql_instance_id"
 			case "SQLServer":
 				dimName = "rds_cluster_sqlserver_id"
 			}

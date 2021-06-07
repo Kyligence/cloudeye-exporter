@@ -71,7 +71,7 @@ SYS.RDS:
     - rds050_disk_write_throughput
     - rds051_avg_disk_sec_per_read
     - rds052_avg_disk_sec_per_write
-  postgresql_cluster_id:
+  postgresql_instance_id:
     - rds001_cpu_util
     - rds002_mem_util
     - rds003_iops
