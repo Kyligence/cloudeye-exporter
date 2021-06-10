@@ -240,6 +240,10 @@ func (exporter *BaseHuaweiCloudExporter) getRdsResourceInfo() (map[string][]stri
 			}
 		}
 
+		for k, v := range resourceInfos {
+			resourceInfos[k] = v[0:3]
+		}
+
 		rdsInfo.Info = resourceInfos
 		rdsInfo.FilterMetrics = filterMetrics
 		rdsInfo.TTL = time.Now().Add(time.Minute * time.Duration(exporter.ClientConfig.TtlMinute)).Unix()

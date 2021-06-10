@@ -326,9 +326,8 @@ func (exporter *BaseHuaweiCloudExporter) getExtensionLabelValues(
 	originalID string) []string {
 
 	for lb := range *allResouceInfo {
-		ari := (*allResouceInfo)[lb]
 		if lb == originalID {
-			dimensionValues = append(dimensionValues, ari[0:len(ari)-1]...)
+			dimensionValues = append(dimensionValues, (*allResouceInfo)[lb]...)
 			return dimensionValues
 		}
 	}
